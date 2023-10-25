@@ -56,14 +56,16 @@ exports.addNewTicket = async (req, res) => {
 };
 
 exports.updateTicket = async (req, res) => {};
+
 exports.deleteTicket = async (req, res) => {
   const tid = req.params.tid;
+  console.log(tid)
   const db = getDb();
-  if (!!tid) {
+  if (!tid) {
     return res.status(404).json({ message: "Provide Id " });
   }
   try {
-    await db.collection("ticket").deleteOne({ _id: new ObjectId(id) });
+    await db.collection("ticket").deleteOne({ _id: new ObjectId(tid) });
     res.status(200).json({ message: "Ticket deleted" });
   } catch (err) {
     res
@@ -71,3 +73,4 @@ exports.deleteTicket = async (req, res) => {
       .json({ message: "Delete Ticket Error", statusId: "SERVER ERROR" });
   }
 };
+ 
