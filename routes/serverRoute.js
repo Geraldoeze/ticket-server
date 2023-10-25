@@ -1,6 +1,6 @@
 const express = require('express');
-const serverController = require('../../controllers/user/user-controllers');
-const { validateUserUpdate } = require('../../middleware/userValidation')
+const serverController = require('../controllers/serverController');
+
 
 const router = express.Router();
 
@@ -12,10 +12,10 @@ router.post("/add", serverController.addNewTicket);
 
 router.patch("/update", serverController.updateTicket)
 
-router.delete("/delete", serverController.deleteTicket);
+router.delete("/delete/:tid", serverController.deleteTicket);
     
 
 
 
- 
+  
 module.exports = router;

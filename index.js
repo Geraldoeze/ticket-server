@@ -16,6 +16,7 @@ require("dotenv").config();
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use("/ticket", serverRoutes)
 
 app.use('/', (req, res) => {
     res.send('Server is running')

@@ -15,7 +15,6 @@ class Users {
     this.title = title;
     this.creator = creator;
     this.status = status;
-    this.gender = gender;
     this._id = id ? new mongodb.ObjectId(id) : null;
     this.priority = priority;
     this.date = date;
@@ -27,7 +26,7 @@ class Users {
   static getAllUsers() {
     const db = getDb();
     return db
-      .collection("users")
+      .collection("ticket")
       .find()
       .toArray()
       .then((users) => {
@@ -40,13 +39,13 @@ class Users {
 
   saveToDB() {
     const db = getDb();
-    return db.collection("users").insertOne(this);
+    return db.collection("ticket").insertOne(this);
   }
 
   static findById(Id) {
     const db = getDb();
     return db
-      .collection("users")
+      .collection("ticket")
       .find({ _id: new mongodb.ObjectId(Id) })
       .next()
       .then((user) => {
