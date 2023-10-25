@@ -17,11 +17,12 @@ exports.getAllTickets = async (req, res, next) => {
 
 exports.findTicketbyId = async (req, res) => {
   const ticketId = req.params.tid;
-  if (!!ticketId) {
-    return res.status(404).json({ message: "A ticked Id found" });
+
+  if (!ticketId) {
+    return res.status(404).json({ message: "Ticked Id not found" });
   }
   try {
-    // find user from db
+    // find ticket from db
     const ticket = await User.findById(ticketId);
     res.status(200).json({ message: "Ticket gotten", response: ticket });
   } catch (err) {
