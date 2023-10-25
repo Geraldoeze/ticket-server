@@ -4,7 +4,7 @@ const Server = require('http');
 const createServer = Server.createServer;
 const mongoConnect = require('./database/mongoConnect').mongoConnect;
 
-
+const serverRoutes = require('./routes/serverRoute')
 
 const app = express();
 const httpServer = createServer(app);
