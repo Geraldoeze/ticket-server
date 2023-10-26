@@ -23,6 +23,9 @@ class Users {
     this.date = date;
     this.description = description;
     this.category = category;
+    this.phone_number = phone_number;
+    this.customer_type = customer_type;
+    this.location = location;
   }
 
   // the static key enables me call getAllUsers directly on the class itself
@@ -56,8 +59,6 @@ class Users {
       })
       .catch((err) => console.log(err));
   }
-
-
 }
 
 module.exports = Users;
