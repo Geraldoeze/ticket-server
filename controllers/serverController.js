@@ -1,5 +1,6 @@
 const { getDb } = require("../database/mongoConnect");
 
+
 require("dotenv").config();
 const mongodb = require("mongodb");
 const ObjectId = mongodb.ObjectId;
@@ -68,5 +69,60 @@ exports.deleteTicket = async (req, res) => {
     res
       .status(500)
       .json({ message: "Delete Ticket Error", statusId: "SERVER ERROR" });
+  }
+};
+
+// login handler
+exports.loginAdmin = async (req, res, next) => {
+  const db = getDb();
+  try {
+    const { username, password } = req.body;
+    console.log(username, password);
+    // Validate user input
+    if (!(username && password)) {
+      return res.status(400).json({ message: "All input is required" });
+    }
+    const authDetails = await db
+      .collection("auth")
+      .findOne({ username: username });
+    if (!authDetails) {
+      return res.status(400).json({
+        message: "Incorrect email or password.",
+        statusId: "BAD REQUEST",
+      });
+    }
+
+    try {
+      const isPasswordCorrect = await bcrypt.compare(
+        password,
+        authDetails.password
+      );
+      if (!isPasswordCorrect)
+        return res.status(400).json({
+          message: "Incorrect Password!!",
+          statusId: "FAILED",
+        });
+
+      // setting up token
+      const token = jwt.sign(
+        { userId: authDetails._id.toString(), email: authDetails.email },
+        process.env.JSONWEB_TOKEN,
+        { expiresIn: "12h" }
+      );
+      return res.status(200).json({
+        message: "LoginAdmin successful",
+        statusId: "SUCCESS!",
+        token: token,
+        userDetails: authDetails,
+      });
+      // }
+    } catch (err) {
+      res.status(501).json({
+        message: "Error Verifying User !!",
+        statusId: "FAILED",
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
