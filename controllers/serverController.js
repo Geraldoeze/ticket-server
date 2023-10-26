@@ -18,11 +18,12 @@ exports.getAllTickets = async (req, res, next) => {
 
 exports.findTicketbyId = async (req, res) => {
   const ticketId = req.params.tid;
-  if (!!ticketId) {
-    return res.status(404).json({ message: "A ticked Id found" });
+
+  if (!ticketId) {
+    return res.status(404).json({ message: "Ticked Id not found" });
   }
   try {
-    // find user from db
+    // find ticket from db
     const ticket = await User.findById(ticketId);
     res.status(200).json({ message: "Ticket gotten", response: ticket });
   } catch (err) {
@@ -34,17 +35,30 @@ exports.addNewTicket = async (req, res) => {
   const db = await getDb();
   // const RandomId = 100000 + Math.floor(Math.random() * 900000);
   try {
-    const { title, status, creator, priority, description, date, category } =
-      req.body;
+    const {
+      title,
+      status,
+      customer_name,
+      phone_number,
+      customer_type,
+      location,
+      priority,
+      description,
+      date,
+      category,
+    } = req.body;
 
     const UserData = new User(
       title,
       status,
-      creator,
+      customer_name,
       priority,
       description,
       date,
-      category
+      category,
+      phone_number,
+      customer_type,
+      location
     );
 
     const saveUserData = await UserData.saveToDB();
@@ -56,14 +70,16 @@ exports.addNewTicket = async (req, res) => {
 };
 
 exports.updateTicket = async (req, res) => {};
+
 exports.deleteTicket = async (req, res) => {
   const tid = req.params.tid;
+  console.log(tid);
   const db = getDb();
-  if (!!tid) {
+  if (!tid) {
     return res.status(404).json({ message: "Provide Id " });
   }
   try {
-    await db.collection("ticket").deleteOne({ _id: new ObjectId(id) });
+    await db.collection("ticket").deleteOne({ _id: new ObjectId(tid) });
     res.status(200).json({ message: "Ticket deleted" });
   } catch (err) {
     res

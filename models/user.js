@@ -5,21 +5,27 @@ class Users {
   constructor(
     title,
     status,
-    creator,
+    customer_name,
     priority,
     description,
     date,
     category,
+    phone_number,
+    customer_type,
+    location,
     id
   ) {
     this.title = title;
-    this.creator = creator;
+    this.customer_name = customer_name;
     this.status = status;
     this._id = id ? new mongodb.ObjectId(id) : null;
     this.priority = priority;
     this.date = date;
     this.description = description;
     this.category = category;
+    this.phone_number = phone_number;
+    this.customer_type = customer_type;
+    this.location = location;
   }
 
   // the static key enables me call getAllUsers directly on the class itself
