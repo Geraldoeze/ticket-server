@@ -5,15 +5,18 @@ class Users {
   constructor(
     title,
     status,
-    creator,
+    customer_name,
     priority,
     description,
     date,
     category,
+    phone_number,
+    customer_type,
+    location,
     id
   ) {
     this.title = title;
-    this.creator = creator;
+    this.customer_name = customer_name;
     this.status = status;
     this._id = id ? new mongodb.ObjectId(id) : null;
     this.priority = priority;

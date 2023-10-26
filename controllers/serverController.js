@@ -34,17 +34,30 @@ exports.addNewTicket = async (req, res) => {
   const db = await getDb();
   // const RandomId = 100000 + Math.floor(Math.random() * 900000);
   try {
-    const { title, status, creator, priority, description, date, category } =
-      req.body;
+    const {
+      title,
+      status,
+      customer_name,
+      phone_number,
+      customer_type,
+      location,
+      priority,
+      description,
+      date,
+      category,
+    } = req.body;
 
     const UserData = new User(
       title,
       status,
-      creator,
+      customer_name,
       priority,
       description,
       date,
-      category
+      category,
+      phone_number,
+      customer_type,
+      location
     );
 
     const saveUserData = await UserData.saveToDB();
@@ -59,7 +72,7 @@ exports.updateTicket = async (req, res) => {};
 
 exports.deleteTicket = async (req, res) => {
   const tid = req.params.tid;
-  console.log(tid)
+  console.log(tid);
   const db = getDb();
   if (!tid) {
     return res.status(404).json({ message: "Provide Id " });
@@ -73,4 +86,3 @@ exports.deleteTicket = async (req, res) => {
       .json({ message: "Delete Ticket Error", statusId: "SERVER ERROR" });
   }
 };
- 
