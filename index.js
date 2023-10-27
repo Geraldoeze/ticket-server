@@ -9,7 +9,7 @@ const serverRoutes = require('./routes/serverRoute')
 const app = express();
 const httpServer = createServer(app);
 const cors = require("cors");
-const PORT = 7000;
+const PORT = 7100;
 require("dotenv").config();
 
 

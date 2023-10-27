@@ -148,7 +148,6 @@ exports.loginUser = async (req, res) => {
 exports.createMessage = async (req, res) => {
   const db = getDb();
   const { userId, message } = req.body;
-
   // Validate user input
   if (!userId || !message) {
     return res.status(400).json({ message: "All input is required" });
@@ -159,22 +158,22 @@ exports.createMessage = async (req, res) => {
       .findOne({ userId: userId });
 
     if (existingUser) {
-      // user exists already on db, so update message array
+      // user exists already in the database, so update the message array
       await db.collection("messages").updateOne(
         { _id: new mongodb.ObjectId(existingUser?._id) },
         {
-          $set: {
-            message: [{ comment: message?.commemt, date: message?.date }],
+          $push: {
+            message: { comment: message?.comment, date: message?.date },
           },
         }
       );
       res.status(201).json({ message: "Updated User message" });
     } else {
-      // User does not exist on db
+      // User does not exist in the database
       // Create a new message document
       const messageDocument = {
         userId,
-        message: [{ data: message?.date, comment: message?.commemt }],
+        message: [{ comment: message?.comment, date: message?.date }],
       };
 
       // Insert the message document into the database
@@ -195,11 +194,9 @@ exports.getMessages = async (req, res) => {
   const { userId } = req.params;
 
   // Find all messages between the specified sender and receiver
-  const messages = await db
-    .collection("messages")
-    .find({ userId: userId })
-    .toArray();
+  const messages = await db.collection("messages").findOne({ userId: userId });
 
+  const messageData = messages?.message;
   // Return the messages
-  res.status(200).json({ messages });
+  res.status(200).json({ messageData });
 };

@@ -15,8 +15,8 @@ router.patch("status/:tid", serverController.updateStatus);
 
 router.delete("/delete/:tid", serverController.deleteTicket);
 
-router.get("/create/:uid", serverController.createMessage);
+router.post("/create/", serverController.createMessage);
 
-router.post("/fetch", serverController.createMessage);
+router.get("/message/:userId", serverController.getMessages);
 
 module.exports = router;
