@@ -11,7 +11,7 @@ router.get("/fetch/:tid", serverController.findTicketbyId);
 
 router.post("/add", serverController.addNewTicket);
 
-router.patch("status/:tid", serverController.updateStatus);
+router.put("/status/:userId", serverController.updateStatus);
 
 router.delete("/delete/:tid", serverController.deleteTicket);
 

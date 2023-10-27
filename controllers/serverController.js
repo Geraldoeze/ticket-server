@@ -71,22 +71,32 @@ exports.addNewTicket = async (req, res) => {
 exports.updateStatus = async (req, res) => {
   const db = getDb();
   const { status } = req.body;
-  const tid = req.params.tid;
-  try {
-    const updatedDocument = db
-      .collection("ticket")
-      .findOneAndUpdate(
-        { _id: new mongodb.ObjectId(tid) },
-        { $set: { status: status } }
-      );
+  const userNumber = req.params.userId;
 
-    if (updatedDocument) {
-      res.status(201).json({ message: "Updated Status" });
-    } else {
-      // The document was not updated.
-      res.status(501).json({ message: "Updating Status Failed.!! " });
+  try {
+    // Request Validation
+    if (!status) {
+      return res.status(400).json({ message: "Status field is required" });
     }
-  } catch (err) {}
+
+    const userId = new mongodb.ObjectId(userNumber);
+    console.log(status, userId);
+    const filter = { _id: userId };
+    const update = { $set: { status: status } };
+
+    const result = await db.collection("ticket").updateOne(filter, update);
+    console.log(result);
+    if (result.modifiedCount === 1) {
+      return res.status(201).json({ message: "Updated Status" });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "Ticket not found or status not updated" });
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
 exports.deleteTicket = async (req, res) => {
