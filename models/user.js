@@ -3,29 +3,35 @@ const { getDb } = require("../database/mongoConnect");
 
 class Users {
   constructor(
-    title,
     status,
     customer_name,
-    priority,
+    phone_number,
+    country,
+    state,
+    city,
+    communication_mode,
+    transfer_mode,
+    action_request,
     description,
     date,
-    category,
-    phone_number,
-    customer_type,
-    location,
+    customer_request,
+    userId,
     id
   ) {
-    this.title = title;
     this.customer_name = customer_name;
     this.status = status;
     this._id = id ? new mongodb.ObjectId(id) : null;
-    this.priority = priority;
     this.date = date;
     this.description = description;
-    this.category = category;
     this.phone_number = phone_number;
-    this.customer_type = customer_type;
-    this.location = location;
+    this.country = country;
+    this.state = state;
+    this.city = city;
+    this.communication_mode = communication_mode;
+    this.transfer_mode = transfer_mode;
+    this.action_request = action_request;
+    this.customer_request = customer_request;
+    this.userId = userId;
   }
 
   // the static key enables me call getAllUsers directly on the class itself

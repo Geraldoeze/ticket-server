@@ -5,13 +5,31 @@ const mongodb = require("mongodb");
 const ObjectId = mongodb.ObjectId;
 const User = require("../models/user");
 
-exports.getAllTickets = async (req, res, next) => {
+exports.getUserTickets = async (req, res, next) => {
+  const userId = req.params.userId; // Assuming the user's ID is passed as a route parameter
+  const db = await getDb();
   try {
-    // fetch all users from db
-    const allUsers = await User.getAllUsers();
-    res.status(200).json({ message: "Users gotten", response: allUsers });
+    // Find all tickets created by the specified user
+    const tickets = await db
+      .collection("ticket")
+      .find({ userId: userId })
+      .toArray();
+
+    if (tickets.length === 0) {
+      return res
+        .status(200)
+        .json({
+          message: "No tickets created by this user",
+          response: tickets,
+        });
+    }
+    res
+      .status(200)
+      .json({ message: "Tickets created by this user", response: tickets });
   } catch (err) {
-    res.status(501).json({ message: "Getting Tickets Failed.!! " });
+    res
+      .status(500)
+      .json({ message: "Fetching tickets failed", error: err.message });
   }
 };
 
@@ -35,30 +53,36 @@ exports.addNewTicket = async (req, res) => {
   // const RandomId = 100000 + Math.floor(Math.random() * 900000);
   try {
     const {
-      title,
       status,
       customer_name,
       phone_number,
-      customer_type,
-      location,
-      priority,
+      country,
+      state,
+      city,
+      communication_mode,
+      transfer_mode,
+      action_request,
       description,
       date,
-      category,
+      customer_request,
+      userId,
     } = req.body;
 
-    const UserData = new User(
-      title,
+     const UserData = new User(
       status,
       customer_name,
-      priority,
+      phone_number,
+      country,
+      state,
+      city,
+      communication_mode,
+      transfer_mode,
+      action_request,
       description,
       date,
-      category,
-      phone_number,
-      customer_type,
-      location
-    );
+      customer_request,
+      userId,
+     );
 
     const saveUserData = await UserData.saveToDB();
 
@@ -200,12 +224,15 @@ exports.createMessage = async (req, res) => {
 // GET /messages/:sender/:receiver
 exports.getMessages = async (req, res) => {
   const db = getDb();
-
   const { userId } = req.params;
-
+  if (!userId) {
+    return res.status(404).json({ message: "No user ID" });
+  }
   // Find all messages between the specified sender and receiver
   const messages = await db.collection("messages").findOne({ userId: userId });
-
+  if (messages == null) {
+    return res.status(200).json({ messageData: [] });
+  }
   const messageData = messages?.message;
   // Return the messages
   res.status(200).json({ messageData });
