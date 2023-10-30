@@ -8,35 +8,46 @@ const User = require("../models/user");
 exports.getUserTickets = async (req, res, next) => {
   const userId = req.params.userId;
   const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter (default to 1)
-  const pageSize = parseInt(req.query.pageSize) || 10; // Define the number of items per page (default to 10)
+  const pageSize = parseInt(req.query.pageSize) || 5; // Define the number of items per page (default to 10)
 
   const db = await getDb();
+
   try {
+    // Count the total number of tickets created by the user
+    const totalTicketsCount = await db
+      .collection("ticket")
+      .estimatedDocumentCount({ userId: userId });
+
+    // Calculate the number of pages available
+    const numberOfPages = Math.ceil(totalTicketsCount / pageSize);
+
+    // Skip the specified number of documents
     const tickets = await db
       .collection("ticket")
       .find({ userId: userId })
-      .skip((page - 1) * pageSize) // Calculate the number of items to skip based on the page number
-      .limit(pageSize) // Limit the number of items per page
+      .skip((page - 1) * pageSize)
+      .limit(pageSize)
       .toArray();
-      const totalTicketsCount = await db
-      .collection("ticket")
-      .find({ userId: userId })
-      .count();
 
     if (tickets.length === 0) {
       return res.status(200).json({
         message: "No tickets created by this user",
         response: tickets,
-        totalCount: totalTicketsCount
+        numberOfPages: numberOfPages,
       });
     }
 
-    res.status(200).json({ message: "Tickets created by this user", response: tickets, totalCount: totalTicketsCount });
+    res.status(200).json({
+      message: "Tickets created by this user",
+      response: tickets,
+      numberOfPages: numberOfPages,
+    });
   } catch (err) {
-    res.status(500).json({ message: "Fetching tickets failed", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Fetching tickets failed", error: err.message });
   }
 };
-
 
 exports.findTicketbyId = async (req, res) => {
   const ticketId = req.params.tid;
@@ -73,7 +84,7 @@ exports.addNewTicket = async (req, res) => {
       userId,
     } = req.body;
 
-     const UserData = new User(
+    const UserData = new User(
       status,
       customer_name,
       phone_number,
@@ -86,8 +97,8 @@ exports.addNewTicket = async (req, res) => {
       description,
       date,
       customer_request,
-      userId,
-     );
+      userId
+    );
 
     const saveUserData = await UserData.saveToDB();
 
@@ -186,20 +197,21 @@ exports.loginUser = async (req, res) => {
 // POST /messages
 exports.createMessage = async (req, res) => {
   const db = getDb();
-  const { userId, message } = req.body;
+  const { ticketId, message } = req.body;
+  console.log(ticketId)
   // Validate user input
-  if (!userId || !message) {
-    return res.status(400).json({ message: "All input is required" });
+  if (!ticketId || !message) {
+    return res.status(400).json({ message: "All parameters are required" });
   }
   try {
-    const existingUser = await db
+    const existingTicket = await db
       .collection("messages")
-      .findOne({ userId: userId });
+      .findOne({ ticketId: ticketId });
 
-    if (existingUser) {
-      // user exists already in the database, so update the message array
+    if (existingTicket) {
+      // ticket exists already in the database, so update the message array
       await db.collection("messages").updateOne(
-        { _id: new mongodb.ObjectId(existingUser?._id) },
+        { _id: new mongodb.ObjectId(existingTicket?._id) },
         {
           $push: {
             message: { comment: message?.comment, date: message?.date },
@@ -208,13 +220,13 @@ exports.createMessage = async (req, res) => {
       );
       res.status(201).json({ message: "Updated User message" });
     } else {
-      // User does not exist in the database
+      // Ticket has no message in the database
       // Create a new message document
       const messageDocument = {
-        userId,
+        ticketId,
         message: [{ comment: message?.comment, date: message?.date }],
       };
-
+ 
       // Insert the message document into the database
       await db.collection("messages").insertOne(messageDocument);
 
@@ -229,12 +241,14 @@ exports.createMessage = async (req, res) => {
 // GET /messages/:sender/:receiver
 exports.getMessages = async (req, res) => {
   const db = getDb();
-  const { userId } = req.params;
-  if (!userId) {
-    return res.status(404).json({ message: "No user ID" });
+  const { ticketId } = req.params;
+  if (!ticketId) {
+    return res.status(404).json({ message: "No Ticket ID" });
   }
   // Find all messages between the specified sender and receiver
-  const messages = await db.collection("messages").findOne({ userId: userId });
+  const messages = await db
+    .collection("messages")
+    .findOne({ ticketId: ticketId });
   if (messages == null) {
     return res.status(200).json({ messageData: [] });
   }
