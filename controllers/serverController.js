@@ -6,32 +6,37 @@ const ObjectId = mongodb.ObjectId;
 const User = require("../models/user");
 
 exports.getUserTickets = async (req, res, next) => {
-  const userId = req.params.userId; // Assuming the user's ID is passed as a route parameter
+  const userId = req.params.userId;
+  const page = parseInt(req.query.page) || 1; // Get the page number from the query parameter (default to 1)
+  const pageSize = parseInt(req.query.pageSize) || 10; // Define the number of items per page (default to 10)
+
   const db = await getDb();
   try {
-    // Find all tickets created by the specified user
     const tickets = await db
       .collection("ticket")
       .find({ userId: userId })
+      .skip((page - 1) * pageSize) // Calculate the number of items to skip based on the page number
+      .limit(pageSize) // Limit the number of items per page
       .toArray();
+      const totalTicketsCount = await db
+      .collection("ticket")
+      .find({ userId: userId })
+      .count();
 
     if (tickets.length === 0) {
-      return res
-        .status(200)
-        .json({
-          message: "No tickets created by this user",
-          response: tickets,
-        });
+      return res.status(200).json({
+        message: "No tickets created by this user",
+        response: tickets,
+        totalCount: totalTicketsCount
+      });
     }
-    res
-      .status(200)
-      .json({ message: "Tickets created by this user", response: tickets });
+
+    res.status(200).json({ message: "Tickets created by this user", response: tickets, totalCount: totalTicketsCount });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "Fetching tickets failed", error: err.message });
+    res.status(500).json({ message: "Fetching tickets failed", error: err.message });
   }
 };
+
 
 exports.findTicketbyId = async (req, res) => {
   const ticketId = req.params.tid;
