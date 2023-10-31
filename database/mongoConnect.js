@@ -1,15 +1,16 @@
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
-require('dotenv').config();
 
 let _db;
-const MONGODB_URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@dotsafetyuser.mklfc.mongodb.net/${process.env.DATABASE}?retryWrites=true&w=majority`;
+
+const MONGODB_URL = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.DATABASE}.uktzq.mongodb.net/${process.env.COLLECTION}?retryWrites=true&w=majority`;
+// const MONGODB_URL = "mongodb://localhost:27017/StudentAdmin";
 const mongoConnect = (callback) => {
   MongoClient.connect(MONGODB_URL, { useNewUrlParser: true })
     .then((client) => {
       console.log("Connected!");
-      _db = client.db();
-      callback();
+      _db = client.db(); 
+      callback(); 
     })
     .catch((err) => {
       console.log(err);

@@ -51,6 +51,7 @@ exports.getUserTickets = async (req, res, next) => {
 
 exports.findTicketbyId = async (req, res) => {
   const ticketId = req.params.tid;
+
   if (!ticketId) {
     return res.status(404).json({ message: "Ticked Id not found" });
   }
@@ -169,7 +170,7 @@ exports.loginUser = async (req, res) => {
     const authDetails = await db
       .collection("auth")
       .findOne({ username: username });
-    console.log(authDetails);
+
     if (!authDetails) {
       return res.status(400).json({
         message: "Incorrect email or password.",
