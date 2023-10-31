@@ -1,7 +1,0 @@
-{
-  "env": {
-    "MONGO_USER": "dotsafetyuser",
-    "MONGO_PASSWORD": "FNGjaSlUlGYT9mnw",
-    "DATABASE": "tickets-app"
-  }
-}
