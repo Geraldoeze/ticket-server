@@ -226,7 +226,7 @@ exports.createMessage = async (req, res) => {
         ticketId,
         message: [{ comment: message?.comment, date: message?.date }],
       };
-
+ 
       // Insert the message document into the database
       await db.collection("messages").insertOne(messageDocument);
 
