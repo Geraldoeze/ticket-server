@@ -15,6 +15,7 @@ class Users {
     description,
     date,
     customer_request,
+    email,
     userId,
     id
   ) {
@@ -31,6 +32,7 @@ class Users {
     this.transfer_mode = transfer_mode;
     this.action_request = action_request;
     this.customer_request = customer_request;
+    this.email = email;
     this.userId = userId;
   }
 

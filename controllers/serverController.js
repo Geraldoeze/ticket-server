@@ -82,6 +82,7 @@ exports.addNewTicket = async (req, res) => {
       date,
       customer_request,
       userId,
+      email
     } = req.body;
 
     const UserData = new User(
@@ -97,6 +98,7 @@ exports.addNewTicket = async (req, res) => {
       description,
       date,
       customer_request,
+      email,
       userId
     );
 
