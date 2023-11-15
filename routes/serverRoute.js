@@ -1,5 +1,6 @@
 const express = require("express");
 const serverController = require("../controllers/serverController");
+const adminController = require("../controllers/adminController");
 
 const router = express.Router();
 
@@ -18,5 +19,12 @@ router.delete("/delete/:tid", serverController.deleteTicket);
 router.post("/create/", serverController.createMessage);
 
 router.get("/message/:ticketId", serverController.getMessages);
+
+// Admin
+router.post("/admin/newuser", adminController.createNewUser);
+
+router.get("/admin/:adminId", adminController.getAllUsers);
+
+router.post("/admin/auth", adminController.loginAdmin);
 
 module.exports = router;

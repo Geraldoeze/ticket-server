@@ -5,7 +5,6 @@ const createServer = Server.createServer;
 const mongoConnect = require("./database/mongoConnect").mongoConnect;
 
 const serverRoutes = require("./routes/serverRoute");
-const adminRoutes = require("./routes/adminRoute");
 
 const app = express();
 const httpServer = createServer(app);
@@ -16,8 +15,9 @@ require("dotenv").config();
 app.use(cors());
 app.use(bodyParser.json());
 
-app.use("/ticket/admin", adminRoutes);
+
 app.use("/ticket", serverRoutes);
+
 
 app.use("/", (req, res) => {
   res.send("Server is running");

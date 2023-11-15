@@ -12,7 +12,6 @@ class Admin {
     this.password = password;
     this.username = username;
     this.email = email;
-    this.userId = userId;
   }
 
   // the static key enables me call getAllUsers directly on the class itself
@@ -30,10 +29,24 @@ class Admin {
       });
   }
 
-  saveToDB() {
+  async saveToDB(adminId) {
     const db = getDb();
-    return db.collection("auth").insertOne(this);
+  
+    // Check if adminId exists in the database
+    const adminExists = await db.collection("admin").find({ _id: new mongodb.ObjectId(adminId) })
+  
+    if (adminExists) {
+      // If adminId exists, execute the saveToDB function
+      return db.collection("auth").insertOne(this);
+    } else {
+      // If adminId doesn't exist, you might want to handle this case accordingly
+      console.error(`Admin with ID ${adminId} not found in the database.`);
+      // You can throw an error, log a message, or handle it based on your requirements.
+      // For now, let's just return a message indicating that the adminId doesn't exist.
+      return Promise.reject(`Admin with ID ${adminId} not found in the database.`);
+    }
   }
+  
 
   static findById(Id) {
     const db = getDb();

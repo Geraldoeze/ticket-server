@@ -1,13 +1,13 @@
 const Admin = require("../models/admin");
+const { getDb } = require("../database/mongoConnect");
 
 exports.createNewUser = async (req, res) => {
-  const db = await getDb();
   try {
-    const { password, username, userId, email } = req.body;
+    const { password, username, adminId, email } = req.body;
 
-    const NewUser = new Admin(username, email, password, userId);
+    const NewUser = new Admin(username, email, password);
 
-    const saveUser = await NewUser.saveToDB();
+    const saveUser = await NewUser.saveToDB(adminId);
 
     res.status(201).json({ message: "User Created", response: saveUser });
   } catch (err) {
@@ -63,7 +63,7 @@ exports.loginAdmin = async (req, res) => {
   const db = getDb();
   try {
     const { username, password } = req.body;
-    console.log(req.body)
+
     // Validate user input
     if (!(username && password)) {
       return res.status(400).json({ message: "All input is required" });
@@ -88,7 +88,7 @@ exports.loginAdmin = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       statusId: "SUCCESS!",
-      adminDetails: authDetails,
+      adminDetails: {_id: authDetails._id, username:authDetails.usernane}
     });
   } catch (err) {
     console.log(err);
